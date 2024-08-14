@@ -1,0 +1,799 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Art Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        #controls {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        select, button {
+            padding: 5px;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #canvas-container {
+            border: 1px solid #ccc;
+            background-color: #fff;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #canvas-container, #canvas-container * {
+                visibility: visible;
+            }
+            #canvas-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+</head>
+<body>
+    <h1>Art Generator</h1>
+
+    <div id="controls">
+        <select id="scene">
+            <option value="modern">Modern</option>
+            <option value="classic">Classic</option>
+            <option value="abstract">Abstract</option>
+            <option value="nature">Nature</option>
+            <option value="urban">Urban</option>
+            <option value="fantasy">Fantasy</option>
+            <option value="minimalist">Minimalist</option>
+            <option value="surreal">Surreal</option>
+            <option value="geometric">Geometric</option>
+            <option value="futuristic">Futuristic</option>
+        </select>
+
+        <select id="colorPattern">
+            <option value="random">Random Colors</option>
+            <option value="monochrome">Monochrome</option>
+            <option value="pastel">Pastel</option>
+            <option value="vibrant">Vibrant</option>
+            <option value="earth">Earth Tones</option>
+        </select>
+
+        <select id="complexity">
+            <option value="simple">Simple</option>
+            <option value="medium">Medium</option>
+            <option value="complex">Complex</option>
+        </select>
+
+        <select id="mood">
+            <option value="calm">Calm</option>
+            <option value="energetic">Energetic</option>
+            <option value="mysterious">Mysterious</option>
+            <option value="joyful">Joyful</option>
+            <option value="melancholic">Melancholic</option>
+        </select>
+
+        <select id="composition">
+            <option value="centered">Centered</option>
+            <option value="asymmetrical">Asymmetrical</option>
+            <option value="diagonal">Diagonal</option>
+            <option value="radial">Radial</option>
+        </select>
+
+        <select id="texture">
+            <option value="smooth">Smooth</option>
+            <option value="rough">Rough</option>
+            <option value="grainy">Grainy</option>
+            <option value="metallic">Metallic</option>
+        </select>
+
+        <select id="style">
+            <option value="realistic">Realistic</option>
+            <option value="cartoonish">Cartoonish</option>
+            <option value="impressionistic">Impressionistic</option>
+            <option value="pixelated">Pixelated</option>
+        </select>
+
+        <select id="theme">
+            <option value="space">Space</option>
+            <option value="underwater">Underwater</option>
+            <option value="cityscape">Cityscape</option>
+            <option value="dreamscape">Dreamscape</option>
+        </select>
+
+        <select id="lighting">
+            <option value="bright">Bright</option>
+            <option value="dim">Dim</option>
+            <option value="dramatic">Dramatic</option>
+            <option value="neon">Neon</option>
+        </select>
+
+        <button id="generate">Generate</button>
+        <button id="print">Print</button>
+        <button id="clear">Clear</button>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <script>
+        let canvas;
+
+        function setup() {
+            canvas = createCanvas(800, 600);
+            canvas.parent('canvas-container');
+            generateArt(); // Auto-generate art on page load
+            document.getElementById('generate').addEventListener('click', generateArt);
+            document.getElementById('print').addEventListener('click', printDrawing);
+            document.getElementById('clear').addEventListener('click', clearCanvas);
+        }
+
+        function draw() {
+            // Drawing function is intentionally empty since we manually call generateArt
+        }
+
+        function generateArt() {
+            let scene = document.getElementById('scene').value;
+            let colorPattern = document.getElementById('colorPattern').value;
+            let complexity = document.getElementById('complexity').value;
+            let mood = document.getElementById('mood').value;
+            let composition = document.getElementById('composition').value;
+            let texture = document.getElementById('texture').value;
+            let style = document.getElementById('style').value;
+            let theme = document.getElementById('theme').value;
+            let lighting = document.getElementById('lighting').value;
+
+            background(255);
+
+            // Apply color pattern
+            let palette = getColorPalette(colorPattern);
+
+            // Apply composition
+            applyComposition(composition);
+
+            // Generate art based on scene
+            switch(scene) {
+                case 'modern':
+                    drawModernArt(palette, complexity, mood);
+                    break;
+                case 'classic':
+                    drawClassicArt(palette, complexity, mood);
+                    break;
+                case 'abstract':
+                    drawAbstractArt(palette, complexity, mood);
+                    break;
+                case 'nature':
+                    drawNatureArt(palette, complexity, mood);
+                    break;
+                case 'urban':
+                    drawUrbanArt(palette, complexity, mood);
+                    break;
+                case 'fantasy':
+                    drawFantasyArt(palette, complexity, mood);
+                    break;
+                case 'minimalist':
+                    drawMinimalistArt(palette, complexity, mood);
+                    break;
+                case 'surreal':
+                    drawSurrealArt(palette, complexity, mood);
+                    break;
+                case 'geometric':
+                    drawGeometricArt(palette, complexity, mood);
+                    break;
+                case 'futuristic':
+                    drawFuturisticArt(palette, complexity, mood);
+                    break;
+                default:
+                    drawAbstractArt(palette, complexity, mood);
+            }
+
+            // Apply texture
+            applyTexture(texture);
+
+            // Apply style
+            applyStyle(style);
+
+            // Apply theme
+            applyTheme(theme);
+
+            // Apply lighting
+            applyLighting(lighting);
+        }
+
+        function printDrawing() {
+            window.print();
+        }
+
+        function clearCanvas() {
+            clear();
+            background(255);
+        }
+
+        function getColorPalette(colorPattern) {
+            let palette = [];
+            switch(colorPattern) {
+                case 'monochrome':
+                    let baseColor = color(random(255), random(255), random(255));
+                    palette = [baseColor, color(red(baseColor), green(baseColor), blue(baseColor), 100),
+                               color(red(baseColor), green(baseColor), blue(baseColor), 200)];
+                    break;
+                case 'pastel':
+                    palette = [color(random(100, 255), random(100, 255), random(100, 255), 100),
+                               color(random(100, 255), random(100, 255), random(100, 255), 100),
+                               color(random(100, 255), random(100, 255), random(100, 255), 100)];
+                    break;
+                case 'vibrant':
+                    palette = [color(random(200, 255), random(50), random(50)),
+                               color(random(50), random(200, 255), random(50)),
+                               color(random(50), random(50), random(200, 255))];
+                    break;
+                case 'earth':
+                    palette = [color(120, 63, 4), color(210, 180, 140), color(85, 107, 47)];
+                    break;
+                default:
+                    palette = [color(random(255), random(255), random(255)),
+                               color(random(255), random(255), random(255)),
+                               color(random(255), random(255), random(255))];
+            }
+            return palette;
+        }
+
+        function applyComposition(composition) {
+            push();
+            switch(composition) {
+                case 'centered':
+                    translate(width/2, height/2);
+                    break;
+                case 'asymmetrical':
+                    translate(random(width), random(height));
+                    break;
+                case 'diagonal':
+                    rotate(PI/4);
+                    break;
+                case 'radial':
+                    angleMode(DEGREES);
+                    break;
+            }
+            pop();
+        }
+
+        function applyTexture(texture) {
+            loadPixels();
+            for (let i = 0; i < pixels.length; i += 4) {
+                let factor;
+                switch(texture) {
+                    case 'rough':
+                        factor = random(-20, 20);
+                        break;
+                    case 'grainy':
+                        factor = random(-10, 10);
+                        break;
+                    case 'metallic':
+                        factor = sin(i/100) * 20;
+                        break;
+                    default:
+                        factor = 0;
+                }
+                pixels[i] = constrain(pixels[i] + factor, 0, 255);
+                pixels[i+1] = constrain(pixels[i+1] + factor, 0, 255);
+                pixels[i+2] = constrain(pixels[i+2] + factor, 0, 255);
+            }
+            updatePixels();
+        }
+
+        function applyStyle(style) {
+            switch(style) {
+                case 'cartoonish':
+                    filter(POSTERIZE, 5);
+                    break;
+                case 'impressionistic':
+                    filter(BLUR, 3);
+                    break;
+                case 'pixelated':
+                    filter(POSTERIZE, 5);
+                    filter(BLUR, 1);
+                    filter(POSTERIZE, 5);
+                    break;
+            }
+        }
+
+        function applyTheme(theme) {
+            switch(theme) {
+                case 'space':
+                    drawStars();
+                    break;
+                case 'underwater':
+                    drawBubbles();
+                    break;
+                case 'cityscape':
+                    drawSkyline();
+                    break;
+                case 'dreamscape':
+                    drawClouds();
+                    break;
+            }
+        }
+
+        function applyLighting(lighting) {
+            loadPixels();
+            for (let i = 0; i < pixels.length; i += 4) {
+                let factor;
+                switch(lighting) {
+                    case 'bright':
+                        factor = 1.2;
+                        break;
+                    case 'dim':
+                        factor = 0.8;
+                        break;
+                    case 'dramatic':
+                        factor = abs(sin(i/1000)) * 2;
+                        break;
+                    case 'neon':
+                        factor = 1.5;
+                        pixels[i+3] = 150; // Add some transparency
+                        break;
+                    default:
+                        factor = 1;
+                }
+                pixels[i] = constrain(pixels[i] * factor, 0, 255);
+                pixels[i+1] = constrain(pixels[i+1] * factor, 0, 255);
+                pixels[i+2] = constrain(pixels[i+2] * factor, 0, 255);
+            }
+            updatePixels();
+        }
+
+        function drawStars() {
+            for (let i = 0; i < 100; i++) {
+                fill(255);
+                ellipse(random(width), random(height), random(1, 3));
+            }
+        }
+
+        function drawBubbles() {
+            for (let i = 0; i < 50; i++) {
+                noFill();
+                stroke(255, 255, 255, 100);
+                ellipse(random(width), random(height), random(5, 20));
+            }
+        }
+
+        function drawSkyline() {
+            fill(0);
+            for (let i = 0; i < width; i += 20) {
+                rect(i, random(height/2, height), 15, height);
+            }
+        }
+
+        function drawClouds() {
+            noStroke();
+            fill(255, 255, 255, 100);
+            for (let i = 0; i < 5; i++) {
+                ellipse(random(width), random(height), random(50, 200), random(30, 100));
+            }
+        }
+
+        function drawModernArt(palette, complexity, mood) {
+            let shapes = complexity === 'simple' ? 5 : complexity === 'medium' ? 15 : 30;
+
+            for (let i = 0; i < shapes; i++) {
+                fill(random(palette));
+                noStroke();
+
+                if (random() < 0.5) {
+                    rect(random(width), random(height), random(50, 200), random(50, 200));
+                } else {
+                    ellipse(random(width), random(height), random(50, 200), random(50, 200));
+                }
+            }
+
+            if (mood === 'energetic') {
+                for (let i = 0; i < 100; i++) {
+                    stroke(random(palette));
+                    line(random(width), random(height), random(width), random(height));
+                }
+            }
+        }
+
+        function drawClassicArt(palette, complexity, mood) {
+            background(200, 180, 140); // Aged canvas look
+            let shapes = complexity === 'simple' ? 3 : complexity === 'medium' ? 7 : 15;
+
+            for (let i = 0; i < shapes; i++) {
+                fill(random(palette));
+                stroke(50);
+                strokeWeight(2);
+
+                beginShape();
+                for (let j = 0; j < 5; j++) {
+                    curveVertex(random(width), random(height));
+                }
+                endShape(CLOSE);
+            }
+
+            if (mood === 'mysterious') {
+                fill(0, 0, 0, 100);
+                noStroke();
+                rect(0, 0, width, height);
+            }
+        }
+
+        function drawAbstractArt(palette, complexity, mood) {
+            let shapes = complexity === 'simple' ? 10 : complexity === 'medium' ? 30 : 60;
+
+            for (let i = 0; i < shapes; i++) {
+                fill(random(palette));
+                noStroke();
+
+                push();
+                translate(random(width), random(height));
+                rotate(random(TWO_PI));
+
+                if (random() < 0.3) {
+                    triangle(0, 0, random(-100, 100), random(-100, 100), random(-100, 100), random(-100, 100));
+                } else if (random() < 0.6) {
+                    arc(0, 0, random(100), random(100), random(TWO_PI), random(TWO_PI));
+                } else {
+                    beginShape();
+                    for (let j = 0; j < 5; j++) {
+                        vertex(random(-50, 50), random(-50, 50));
+                    }
+                    endShape(CLOSE);
+                }
+                pop();
+            }
+
+            if (mood === 'joyful') {
+                for (let i = 0; i < 200; i++) {
+                    fill(random(palette));
+                    ellipse(random(width), random(height), random(2, 5));
+                }
+            }
+        }
+
+        function drawNatureArt(palette, complexity, mood) {
+            background(200, 230, 255); // Sky
+
+            // Draw ground
+            fill(100, 200, 100);
+            rect(0, height * 0.7, width, height * 0.3);
+
+            let elements = complexity === 'simple' ? 5 : complexity === 'medium' ? 15 : 30;
+
+            for (let i = 0; i < elements; i++) {
+                fill(random(palette));
+                noStroke();
+
+                let x = random(width);
+                let y = random(height * 0.6, height);
+
+                // Draw trees or flowers
+                if (random() < 0.7) {
+                    fill(139, 69, 19);
+                    rect(x, y, 10, 40);
+                    fill(random(palette));
+                    ellipse(x + 5, y - 20, 30, 30);
+                } else {
+                    fill(0, 200, 0);
+                    rect(x, y, 5, 20);
+                    fill(random(palette));
+                    ellipse(x, y - 10, 10, 10);
+                }
+            }
+
+            if (mood === 'calm') {
+                // Add some clouds
+                fill(255, 255, 255, 100);
+                for (let i = 0; i < 5; i++) {
+                    ellipse(random(width), random(height * 0.5), 100, 50);
+                }
+            }
+        }
+
+        function drawUrbanArt(palette, complexity, mood) {
+            background(200);
+
+            let buildings = complexity === 'simple' ? 5 : complexity === 'medium' ? 10 : 20;
+
+            for (let i = 0; i < buildings; i++) {
+                fill(random(palette));
+                noStroke();
+
+                let x = i * (width / buildings);
+                let h = random(height * 0.3, height * 0.8);
+                rect(x, height - h, width / buildings, h);
+
+                // Windows
+                fill(255, 255, 0);
+                for (let j = 0; j < 5; j++) {
+                    for (let k = 0; k < 3; k++) {
+                        rect(x + 10 + k * 20, height - h + 30 + j * 40, 10, 20);
+                    }
+                }
+            }
+
+            if (mood === 'energetic') {
+                // Add some traffic
+                for (let i = 0; i < 10; i++) {
+                    fill(random(255), random(255), random(255));
+                    rect(random(width), height - 50, 30, 20);
+                }
+            }
+        }
+
+        function drawFantasyArt(palette, complexity, mood) {
+            background(100, 100, 200);
+
+            let elements = complexity === 'simple' ? 5 : complexity === 'medium' ? 15 : 30;
+
+            for (let i = 0; i < elements; i++) {
+                fill(random(palette));
+                noStroke();
+
+                let x = random(width);
+                let y = random(height);
+
+                // Draw magical elements
+                if (random() < 0.5) {
+                    drawStar(x, y, 5, 10, 20);
+                } else {
+                    drawSpiral(x, y, 20);
+                }
+            }
+
+            if (mood === 'mysterious') {
+                // Add some fog
+                fill(255, 255, 255, 100);
+                for (let i = 0; i < 5; i++) {
+                    ellipse(random(width), random(height), 200, 100);
+                }
+            }
+        }
+
+        function drawMinimalistArt(palette, complexity, mood) {
+            background(255);
+
+            let shapes = complexity === 'simple' ? 1 : complexity === 'medium' ? 3 : 5;
+
+            for (let i = 0; i < shapes; i++) {
+                fill(random(palette));
+                noStroke();
+
+                let size = random(50, 200);
+                let x = random(size, width - size);
+                let y = random(size, height - size);
+
+                if (random() < 0.5) {
+                    rect(x, y, size, size);
+                } else {
+                    ellipse(x, y, size, size);
+                }
+            }
+
+            if (mood === 'calm') {
+                // Add a single line
+                stroke(0);
+                line(0, random(height), width, random(height));
+            }
+        }
+
+        function drawSurrealArt(palette, complexity, mood) {
+            background(220);
+
+            let elements = complexity === 'simple' ? 5 : complexity === 'medium' ? 10 : 20;
+
+            for (let i = 0; i < elements; i++) {
+                fill(random(palette));
+                noStroke();
+
+                push();
+                translate(random(width), random(height));
+                rotate(random(TWO_PI));
+
+                if (random() < 0.3) {
+                    drawEye(0, 0, random(20, 50));
+                } else if (random() < 0.6) {
+                    drawClock(0, 0, random(30, 70));
+                } else {
+                    drawMeltingShape(0, 0, random(50, 100));
+                }
+
+                pop();
+            }
+
+            if (mood === 'mysterious') {
+                // Add some shadows
+                for (let i = 0; i < 10; i++) {
+                    fill(0, 0, 0, 50);
+                    ellipse(random(width), random(height), 100, 20);
+                }
+            }
+        }
+
+        function drawGeometricArt(palette, complexity, mood) {
+            background(240);
+
+            let shapes = complexity === 'simple' ? 10 : complexity === 'medium' ? 30 : 60;
+
+            for (let i = 0; i < shapes; i++) {
+                fill(random(palette));
+                noStroke();
+
+                let x = random(width);
+                let y = random(height);
+                let size = random(10, 50);
+
+                if (random() < 0.25) {
+                    rect(x, y, size, size);
+                } else if (random() < 0.5) {
+                    triangle(x, y, x + size, y, x + size/2, y - size);
+                } else if (random() < 0.75) {
+                    ellipse(x, y, size, size);
+                } else {
+                    polygon(x, y, size/2, 6);
+                }
+            }
+
+            if (mood === 'energetic') {
+                // Add some lines
+                for (let i = 0; i < 20; i++) {
+                    stroke(random(palette));
+                    line(random(width), 0, random(width), height);
+                }
+            }
+        }
+
+        function drawFuturisticArt(palette, complexity, mood) {
+            background(0);
+
+            let elements = complexity === 'simple' ? 5 : complexity === 'medium' ? 15 : 30;
+
+            for (let i = 0; i < elements; i++) {
+                stroke(random(palette));
+                noFill();
+
+                let x = random(width);
+                let y = random(height);
+                let size = random(20, 100);
+
+                if (random() < 0.5) {
+                    drawCircuitPattern(x, y, size);
+                } else {
+                    drawHologram(x, y, size);
+                }
+            }
+
+            if (mood === 'mysterious') {
+                // Add some glowing particles
+                for (let i = 0; i < 100; i++) {
+                    fill(random(palette));
+                    ellipse(random(width), random(height), 2, 2);
+                }
+            }
+        }
+
+        function drawStar(x, y, radius1, radius2, npoints) {
+            let angle = TWO_PI / npoints;
+            let halfAngle = angle / 2.0;
+            beginShape();
+            for (let a = 0; a < TWO_PI; a += angle) {
+                let sx = x + cos(a) * radius2;
+                let sy = y + sin(a) * radius2;
+                vertex(sx, sy);
+                sx = x + cos(a + halfAngle) * radius1;
+                sy = y + sin(a + halfAngle) * radius1;
+                vertex(sx, sy);
+            }
+            endShape(CLOSE);
+        }
+
+        function drawSpiral(x, y, radius) {
+            beginShape();
+            for (let i = 0; i < 100; i++) {
+                let angle = 0.1 * i;
+                let x1 = x + (1 + angle) * cos(angle) * radius / 10;
+                let y1 = y + (1 + angle) * sin(angle) * radius / 10;
+                vertex(x1, y1);
+            }
+            endShape();
+        }
+
+        function drawEye(x, y, size) {
+            fill(255);
+            ellipse(x, y, size, size * 0.6);
+            fill(0);
+            ellipse(x, y, size * 0.3, size * 0.3);
+        }
+
+        function drawClock(x, y, size) {
+            ellipse(x, y, size, size);
+            line(x, y, x + size/3 * cos(PI/6), y - size/3 * sin(PI/6));
+            line(x, y, x + size/2 * cos(PI/2), y - size/2 * sin(PI/2));
+        }
+
+        function drawMeltingShape(x, y, size) {
+            beginShape();
+            for (let i = 0; i < 10; i++) {
+                let angle = TWO_PI * i / 10;
+                let r = size * (1 + 0.3 * sin(3 * angle));
+                vertex(x + r * cos(angle), y + r * sin(angle) + random(10));
+            }
+            endShape(CLOSE);
+        }
+
+        function polygon(x, y, radius, npoints) {
+            let angle = TWO_PI / npoints;
+            beginShape();
+            for (let a = 0; a < TWO_PI; a += angle) {
+                let sx = x + cos(a) * radius;
+                let sy = y + sin(a) * radius;
+                vertex(sx, sy);
+            }
+            endShape(CLOSE);
+        }
+
+        function drawCircuitPattern(x, y, size) {
+            for (let i = 0; i < 5; i++) {
+                let x1 = x + random(-size/2, size/2);
+                let y1 = y + random(-size/2, size/2);
+                let x2 = x + random(-size/2, size/2);
+                let y2 = y + random(-size/2, size/2);
+                line(x1, y1, x2, y2);
+                ellipse(x2, y2, 5, 5);
+            }
+        }
+
+        function drawHologram(x, y, size) {
+            for (let i = 0; i < 5; i++) {
+                rect(x - size/2, y - size/2 + i*size/5, size, 1);
+            }
+            for (let i = 0; i < 3; i++) {
+                rect(x - size/2 + i*size/3, y - size/2, 1, size);
+            }
+        }
+    </script>
+</body>
+</html>
